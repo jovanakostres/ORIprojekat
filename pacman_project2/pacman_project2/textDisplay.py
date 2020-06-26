@@ -14,7 +14,7 @@
 
 import time
 try: 
-    import pacman
+    import pacman_project2.pacman_project2.pacman
 except:
     pass
 

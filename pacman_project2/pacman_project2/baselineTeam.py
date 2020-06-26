@@ -19,13 +19,13 @@
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
-
-from captureAgents import CaptureAgent
-import distanceCalculator
-import random, time, util, sys
-from game import Directions
-import game
-from util import nearestPoint
+from pacman_project2.pacman_project2 import util
+from pacman_project2.pacman_project2.captureAgents import CaptureAgent
+import pacman_project2.pacman_project2.distanceCalculator
+import random, time, pacman_project2.pacman_project2.util, sys
+from pacman_project2.pacman_project2.game import Directions
+import pacman_project2.pacman_project2.game
+from pacman_project2.pacman_project2.util import nearestPoint
 
 #################
 # Team creation #

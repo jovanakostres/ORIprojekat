@@ -12,8 +12,8 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-from game import Agent
-from game import Directions
+from pacman_project2.pacman_project2.game import Agent
+from pacman_project2.pacman_project2.game import Directions
 import random
 
 class KeyboardAgent(Agent):
@@ -34,8 +34,8 @@ class KeyboardAgent(Agent):
         self.keys = []
 
     def getAction( self, state):
-        from graphicsUtils import keys_waiting
-        from graphicsUtils import keys_pressed
+        from pacman_project2.pacman_project2.graphicsUtils import keys_waiting
+        from pacman_project2.pacman_project2.graphicsUtils import keys_pressed
         keys = list(keys_waiting()) + list(keys_pressed())
         if keys != []:
             self.keys = keys

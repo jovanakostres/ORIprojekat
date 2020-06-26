@@ -48,18 +48,18 @@ The keys are
   P1: 'a', 's', 'd', and 'w' to move
   P2: 'l', ';', ',' and 'p' to move
 """
-from game import GameStateData
-from game import Game
-from game import Directions
-from game import Actions
-from util import nearestPoint
-from util import manhattanDistance
-from game import Grid
-from game import Configuration
-from game import Agent
-from game import reconstituteGrid
-import sys, util, types, time, random, imp
-import keyboardAgents
+from pacman_project2.pacman_project2.game import GameStateData
+from pacman_project2.pacman_project2.game import Game
+from pacman_project2.pacman_project2.game import Directions
+from pacman_project2.pacman_project2.game import Actions
+from pacman_project2.pacman_project2.util import nearestPoint
+from pacman_project2.pacman_project2.util import manhattanDistance
+from pacman_project2.pacman_project2.game import Grid
+from pacman_project2.pacman_project2.game import Configuration
+from pacman_project2.pacman_project2.game import Agent
+from pacman_project2.pacman_project2.game import reconstituteGrid
+import sys, pacman_project2.pacman_project2.util, types, time, random, imp
+import pacman_project2.pacman_project2.keyboardAgents
 
 # If you change these, you won't affect the server, so you can't cheat
 KILL_POINTS = 0
@@ -872,6 +872,7 @@ def readCommand( argv ):
   args['agents'] = sum([list(el) for el in zip(redAgents, blueAgents)],[]) # list of agents
 
   numKeyboardAgents = 0
+  from pacman_project2.pacman_project2 import keyboardAgents
   for index, val in enumerate([options.keys0, options.keys1, options.keys2, options.keys3]):
     if not val: continue
     if numKeyboardAgents == 0:
@@ -884,7 +885,7 @@ def readCommand( argv ):
     args['agents'][index] = agent
 
   # Choose a layout
-  import layout
+  from pacman_project2.pacman_project2 import layout
   layouts = []
   for i in range(options.numGames):
     if options.layout == 'RANDOM':
@@ -912,7 +913,7 @@ def randomLayout(seed = None):
     seed = random.randint(0,99999999)
   # layout = 'layouts/random%08dCapture.lay' % seed
   # print 'Generating random layout in %s' % layout
-  import mazeGenerator
+  from pacman_project2.pacman_project2 import mazeGenerator
   return mazeGenerator.generateMaze(seed)
 
 import traceback
@@ -1017,6 +1018,7 @@ def runGames( layouts, agents, display, length, numGames, record, numTraining, r
 def save_score(game):
     with open('score', 'w') as f:
         print(game.state.data.score, file=f)
+
 
 if __name__ == '__main__':
   """
