@@ -26,7 +26,7 @@ from datetime import datetime
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first='TopAgent', second='BottomAgent'):
+               first='DAgent', second='OAgent'):
     """
     This function should return a list of two agents that will form the
     team, initialized using firstIndex and secondIndex as their agent
@@ -155,7 +155,7 @@ class ExpectimaxAgent(ReflexCaptureAgent):
 
     def registerInitialState(self, gameState):
         self.start = gameState.getAgentPosition(self.index)
-        self.favoredY = 0.0
+        #self.favoredY = 0.0
         CaptureAgent.registerInitialState(self, gameState)
 
     def getWeights(self, gameState, action):
@@ -262,28 +262,21 @@ class ExpectimaxAgent(ReflexCaptureAgent):
         # values = [self.evaluate(gameState, a) for a in actions]
         print(self.index)
 
-        values = [self.expectiMax(gameState.generateSuccessor(self.index, a), self.index + 1, 0)[0] for a in actions]
+        indexPlus = self.index + 1
+        if(indexPlus == 4):
+            indexPlus = 0
+
+        values = [self.expectiMax2(gameState, indexPlus, 0, a)[0] for a in actions]
         # print 'eval time for agent %d: %.4f' % (self.index, time.time() - start)
 
         maxValue = max(values)
         # maximum = float("-inf")
+        bestActions = []
         bestActions = [a for a, v in zip(actions, values) if v == maxValue]
-        # bestActions = []
 
         foodLeft = len(self.getFood(gameState).asList())
 
-        # if foodLeft <= 2:
-        #    bestDist = 9999
-        #    for action in actions:
-        #        utility = self.expectimax(1, 0, gameState.generateSuccessor(0, action))
-        #
-        #              if utility > maximum:
-        #                  maximum = utility
-        #                  bestAction = action
-        #          return bestAction
-        bestAction = random.choice(bestActions)
-        return bestAction
-        '''
+
         if foodLeft <= 2:
             bestDist = 9999
             for action in actions:
@@ -294,8 +287,11 @@ class ExpectimaxAgent(ReflexCaptureAgent):
                     bestAction = action
                     bestDist = dist
             return bestAction
-  
-  
+
+        bestAction = random.choice(bestActions)
+        return bestAction
+
+        '''
         maximum = float("-inf")
         #bestAction = Directions.WEST
         #print(self.index)
@@ -323,6 +319,40 @@ class ExpectimaxAgent(ReflexCaptureAgent):
                 bestAction = agentState
         return  bestAction
         '''
+
+    def betterEvaluationFunction2(self, currentGameState, action):
+
+        newPos = currentGameState.getAgentState(self.index).getPosition()
+        # myPos = successor.getAgentState(self.index).getPosition()
+        newFood = self.getFood(currentGameState).asList()
+        newGhostStates = self.getOpponents(currentGameState)
+        newCapsules = currentGameState.getCapsules()
+        # newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+        closestGhost = min(
+            [self.getDistance(newPos, currentGameState.getAgentState(ghost).getPosition()) for ghost in newGhostStates])
+        if newCapsules:
+            closestCapsule = min([self.getDistance(newPos, caps) for caps in newCapsules])
+        else:
+            closestCapsule = 0
+
+        if closestCapsule:
+            closest_capsule = -3 / closestCapsule
+        else:
+            closest_capsule = 100
+
+        if closestGhost:
+            ghost_distance = -2 / closestGhost
+        else:
+            ghost_distance = -500
+
+        foodList = self.getFood(currentGameState).asList()
+        if foodList:
+            closestFood = min([self.getDistance(newPos, food) for food in foodList])
+        else:
+            closestFood = 0
+
+        return -0.5*closestFood + ghost_distance - 10 * len(foodList) + closest_capsule
 
     def betterEvaluationFunction(self, currentGameState):
 
@@ -356,9 +386,9 @@ class ExpectimaxAgent(ReflexCaptureAgent):
         else:
             closestFood = 0
 
-        return -2 * closestFood + ghost_distance - 10 * len(foodList) + closest_capsule
+        return -0.5*closestFood + ghost_distance - 10 * len(foodList) + closest_capsule
 
-    def expectimax(self, agent, depth, gameState):
+    def expectimax(self, gameState, agent, depth):
         start = time.time()
         if gameState.isOver() or depth >= 3:  # return the utility in case the defined depth is reached or the game is won/lost.
             print(time.time() - start)
@@ -428,19 +458,89 @@ class ExpectimaxAgent(ReflexCaptureAgent):
                     result[1] = action
         return result
 
+    def expectiMax2(self, gameState, agent, depth, action):
+        result = []
+        newState = gameState.generateSuccessor(self.index, action)
+
+        if not newState.getLegalActions(agent):
+            print("prosao")
+            return self.betterEvaluationFunction2(newState, action), 0
+
+        if depth == 1:
+            print("prosao2")
+            return self.betterEvaluationFunction2(newState, action), 0
+
+        if agent == newState.getNumAgents() - 1:
+            depth += 1
+            nextAgent = self.index
+
+        else:
+            nextAgent = agent + 1
+
+        for action in newState.getLegalActions(agent):
+            if not result:
+                nextValue = self.expectiMax(newState.generateSuccessor(agent, action), nextAgent, depth)
+
+                if (agent != self.index):
+                    result.append((1.0 / len(newState.getLegalActions(agent))) * nextValue[0])
+                    result.append(action)
+                else:
+                    result.append(nextValue[0])
+                    result.append(action)
+            else:
+
+                previousValue = result[0]
+                nextValue = self.expectiMax(newState.generateSuccessor(agent, action), nextAgent, depth)
+
+                if agent == self.index:
+                    if nextValue[0] > previousValue:
+                        result[0] = nextValue[0]
+                        result[1] = action
+
+                else:
+                    result[0] = result[0] + (1.0 / len(newState.getLegalActions(agent))) * nextValue[0]
+                    result[1] = action
+        return result
+
 
     def getDistance(self, myPos, food):
-        return self.getMazeDistance(myPos, food) + abs(self.favoredY - food[1])
+        return self.getMazeDistance(myPos, food) #+ abs(self.favoredY - food[1])
 
 
-class BottomAgent(ExpectimaxAgent):
+class DAgent(ExpectimaxAgent):
     def registerInitialState(self, gameState):
         ExpectimaxAgent.registerInitialState(self, gameState)
-        self.favoredY = 0.0
+        #self.favoredY = 0.0
+
+    def betterEvaluationFunction2(self, currentGameState, action):
+
+        features = util.Counter()
+        successor = self.getSuccessor(currentGameState, action)
+
+        myState = successor.getAgentState(self.index)
+        myPos = myState.getPosition()
+
+        # Computes whether we're on defense (1) or offense (0)
+        features['onDefense'] = 1
+        if myState.isPacman: features['onDefense'] = 0
+
+        # Computes distance to invaders we can see
+        enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
+        invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+        features['numInvaders'] = len(invaders)
+        if len(invaders) > 0:
+            dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
+            features['invaderDistance'] = min(dists)
+
+        if action == Directions.STOP: features['stop'] = 1
+        rev = Directions.REVERSE[gameState.getAgentState(self.index).configuration.direction]
+        if action == rev: features['reverse'] = 1
+
+        return features
 
 
-class TopAgent(ExpectimaxAgent):
+class OAgent(ExpectimaxAgent):
     def registerInitialState(self, gameState):
         ExpectimaxAgent.registerInitialState(self, gameState)
-        self.favoredY = gameState.data.layout.height
+        #self.favoredY = gameState.data.layout.height
 
