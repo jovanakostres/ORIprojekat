@@ -266,7 +266,8 @@ class ExpectimaxAgent(ReflexCaptureAgent):
         if(indexPlus == 4):
             indexPlus = 0
 
-        values = [self.expectiMax2(gameState, indexPlus, 0, a)[0] for a in actions]
+        #values = [self.expectiMax2(gameState, indexPlus, 0, a)[0] for a in actions]
+        values = [self.expectimax1(gameState, gameState.generateSuccessor(self.index, a), indexPlus, 0, a) for a in actions]
         # print 'eval time for agent %d: %.4f' % (self.index, time.time() - start)
 
         maxValue = max(values)
@@ -415,6 +416,36 @@ class ExpectimaxAgent(ReflexCaptureAgent):
             # print(float(len(gameState.getLegalActions(agent))))
             print(time.time() - start)
             return maxEval / float(len(gameState.getLegalActions(agent)))
+
+    def expectimax1(self, gameState, gameState1, agent, depth, action):
+        start = time.time()
+        #gameState1 = gameState.generateSuccessor(agent, action)
+        print(type(gameState1))
+        if gameState1.isOver() or depth >= 1:  # return the utility in case the defined depth is reached or the game is won/lost.
+            print(time.time() - start)
+            return self.evaluate(gameState, action)
+            # return self.evaluate(gameState, action)
+        if agent == 0 or agent == 2:  # maximizing for pacman
+            maxEval = float("-inf")
+            for newState in gameState1.getLegalActions(agent+1):
+                eval = self.expectimax1(gameState1, gameState1.generateSuccessor(agent, newState), agent+1, depth, newState)
+                maxEval = max(maxEval, eval)
+            print(time.time() - start)
+            return maxEval
+        else:  # performing expectimax action for ghosts/chance nodes.
+            nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
+            if gameState1.getNumAgents() == nextAgent:
+                nextAgent = 0
+            if nextAgent == 0:
+                depth += 1
+            maxEval = 0
+            for newState in gameState1.getLegalActions(nextAgent):
+                eval = self.expectimax1(gameState1, gameState1.generateSuccessor(agent, newState), nextAgent, depth, newState)
+                maxEval = maxEval + eval
+            # print(maxEval)
+            # print(float(len(gameState.getLegalActions(agent))))
+            print(time.time() - start)
+            return maxEval / float(len(gameState1.getLegalActions(agent)))
 
 
     def expectiMax(self, gameState, agent, depth):
