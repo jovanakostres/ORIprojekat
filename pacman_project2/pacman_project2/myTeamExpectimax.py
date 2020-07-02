@@ -255,6 +255,8 @@ class ExpectimaxAgent(ReflexCaptureAgent):
         """
         actions = gameState.getLegalActions(self.index)
 
+        print("action")
+
         # You can profile your evaluation time by uncommenting these lines
         # start = time.time()
         # values = [self.expectimax(1, 0, gameState.generateSuccessor(0, a)) for a in actions]
