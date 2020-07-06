@@ -22,3 +22,5 @@ Korišćeni paketi tensorflow, keras i matplotlib za izradu algoritma
 Učitavanje podataka za treniranje - training_data.py  
 Učitavanje podataka za testiranja - test_data.py  
 Fajl za pokretanje - cnn.py
+
+Isprobane su četiri različite arhitekture mreže, od kojih se najbolje pokazala mreža koja sadrži dva konvoluciona sloja sa akrivacionom funkcion ReLU, dva MaxPooling sloja (svi sa po 64 kernela). Za regularizaciju je korišćen Dropout. Trenirana je u 10 epoha. Validation accuracy za testne podatke iznosi oko 0.8.
