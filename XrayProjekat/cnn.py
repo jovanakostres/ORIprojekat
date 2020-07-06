@@ -124,8 +124,8 @@ if __name__ == '__main__':
     new_model = tf.keras.models.load_model('model1.model')
 
     val_loss, val_acc = new_model.evaluate(X_test, y_test)
-    print("Loss: ", val_loss)
-    print("Accuracy: ", val_acc)
+    print("Validation loss: ", val_loss)
+    print("Validation accuracy: ", val_acc)
     predictions = new_model.predict([X_test])
 
     n = random.randint(0, len(y_test))
