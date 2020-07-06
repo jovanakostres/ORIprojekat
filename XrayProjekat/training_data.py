@@ -18,13 +18,14 @@ d = pd.read_csv(f, index_col=0,
 # print(d)
 # d.info()
 
-CATEGORIES = ['Normal', 'Pnemonia']
+CATEGORIES = ['Normal', 'Virus', 'bacteria']
 NAMES = d['X_ray_image_name']
 LABELS = d['Label']
+LABEL1 = d['Label_1_Virus_category']
 
 training_data = []
 
-IMG_SIZE = 100
+IMG_SIZE = 50
 
 
 def get_class(img):
@@ -33,10 +34,12 @@ def get_class(img):
             ind = NAMES.tolist().index(name)
             l = LABELS.tolist()[ind]
             #print(l)
+            if(l == 'Pnemonia'):
+                l = LABEL1.tolist()[ind]
             for c in CATEGORIES:
                 if l == c:
                     return CATEGORIES.index(c)
-        #i += 1
+            return None
 
 
 
@@ -62,10 +65,9 @@ def create_training_data():
 
 
 if __name__ == '__main__':
-    print("Hello")
 
-    myset = set(LABELS)
-    CATEGORIES = list(myset)
+    #myset = set(LABELS)
+    #CATEGORIES = list(myset)
     print(CATEGORIES)
     print(len(NAMES))
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
         X.append(features)
         y.append(label)
     arr = np.array(X)
-    X = np.reshape(arr, (-1, IMG_SIZE, IMG_SIZE))
+    X = np.reshape(arr, (-1, IMG_SIZE, IMG_SIZE, 1))
     #X = np.array(X).reshape(-1, (IMG_SIZE, IMG_SIZE, 1))
     print(len(X))
 
