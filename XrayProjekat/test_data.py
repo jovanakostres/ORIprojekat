@@ -20,7 +20,7 @@ LABEL1 = d['Label_1_Virus_category']
 
 test_data = []
 
-IMG_SIZE = 50
+IMG_SIZE = 70
 
 
 def get_class(img):
